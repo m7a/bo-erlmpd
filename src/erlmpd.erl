@@ -52,7 +52,8 @@
 -export([disableoutput/2, enableoutput/2, toggleoutput/2, outputs/1]).
 
 %% Reflection
--export([commands/1, notcommands/1, tagtypes/1, urlhandlers/1]).
+-export([commands/1, notcommands/1, tagtypes/1, tagtypes_disable/2,
+	tagtypes_enable/2, tagtypes_clear/1, tagtypes_all/1, urlhandlers/1]).
 
 %% Default timeout when waiting for a response from MPD
 -define(TIMEOUT, 5000).
@@ -1107,7 +1108,7 @@ count(C=#mpd_conn{}, Tag, X) ->
 %% for all songs matching the given filter and groups by the given
 %% tag.
 %%
-%% Example: erlmpd:count_group(Conn, artist, {base, ""}).
+%% Example: `erlmpd:count_group(Conn, artist, {base, ""}).'
 %% returns a list like this:
 %% [
 %% 	[{'Artist',&lt;&lt;"Ace Of Base"&gt;&gt;},{songs,13},{playtime,2944}],
@@ -1152,6 +1153,23 @@ find(C, Filter) ->
 %% @doc
 %% Finds songs in the db that match the given filter optionally
 %% providing sort and window options.
+%%
+%% Example returned list format:
+%%
+%% ```
+%% [ ... [{file,<<"album/zucchero_zu_co/01_13_the_flight.flac">>},
+%%       {'Last-Modified',<<"2024-03-03T20:57:24Z">>},
+%%       {'Added',<<"2024-08-23T20:33:10Z">>},
+%%       {'Format',<<"44100:16:2">>},
+%%       {'Album',<<"Zu & Co.">>},
+%%       {'Artist',<<"Zucchero">>},
+%%       {'Date',<<"2004">>},
+%%       {'Title',<<"The Flight">>},
+%%       {'Track',13},
+%%       {'Time',289},
+%%       {duration,<<"288.613">>}],
+%% ... ]
+%% '''
 %% @end
 %%-------------------------------------------------------------------
 -spec find_ex(C::mpd_conn(), Filter::filter(),
@@ -1562,11 +1580,81 @@ notcommands(C=#mpd_conn{}) ->
 %%-------------------------------------------------------------------
 %% @doc
 %% Shows a list of available song metadata.
+%%
+%% Example:
+%% ```
+%% {ok, Conn} = erlmpd:connect("127.0.0.1", 6600),
+%% T1 = erlmpd:tagtypes(Conn),
+%% io:fwrite("T1=<~p>~n", [T1]),
+%% '''
 %% @end
 %%-------------------------------------------------------------------
 -spec tagtypes(C::mpd_conn()) -> [binary()] | {error, any_error()}.
 tagtypes(C=#mpd_conn{}) ->
     get_all(tagtype, command(C, "tagtypes")).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Disables selected tags from being returned to the client.
+%% Is expected that this function is only useful in special contexts
+%% such as designing an application which hides certain
+%% “uninteresting” tags but still displays new tags as they become
+%% supported by MPD.
+%%
+%% The “easy” approach to limit tagtypes is to call tagtypes_clear/1
+%% followed by tagtypes_enable/2.
+%% @end
+%%-------------------------------------------------------------------
+-spec tagtypes_disable(C::mpd_conn(), [tag()]) -> ok | {error, any_error()}.
+tagtypes_disable(C=#mpd_conn{}, Names) ->
+    parse_none(command(C, "tagtypes disable", [atom_to_list(T) || T <- Names])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Enables a selected subset of tags to be returned by subsequent
+%% queries.
+%%
+%% Example:
+%% ```
+%% ok = erlmpd:tagtypes_enable(Conn, [album, title]),
+%% T3 = erlmpd:tagtypes(Conn),
+%% io:fwrite("T3=<~p>~n", [T3]).
+%% '''
+%% @end
+%%-------------------------------------------------------------------
+-spec tagtypes_enable(C::mpd_conn(), [tag()]) -> ok | {error, any_error()}.
+tagtypes_enable(C=#mpd_conn{}, Names) ->
+    parse_none(command(C, "tagtypes enable", [atom_to_list(T) || T <- Names])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Clears all tag types. I.e. commands which may return song or
+%% album metadata return only the minimum amount of information.
+%%
+%% This can be used to limit the requested tags to the ones that the
+%% application is interested in by calling tagtypes_clear/1 followed
+%% by tagtypes_enable/2.
+%%
+%% Example:
+%% ```
+%% ok = erlmpd:tagtypes_clear(Conn),
+%% T2 = erlmpd:tagtypes(Conn),
+%% io:fwrite("T2=<~p>~n", [T2]),
+%% '''
+%% @end
+%%-------------------------------------------------------------------
+-spec tagtypes_clear(C::mpd_conn()) -> ok | {error, any_error()}.
+tagtypes_clear(C=#mpd_conn{}) ->
+    parse_none(command(C, "tagtypes clear")).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Enables all tag types. This is the inverse of tagtypes_clear/1.
+%% @end
+%%-------------------------------------------------------------------
+-spec tagtypes_all(C::mpd_conn()) -> ok | {error, any_error()}.
+tagtypes_all(C=#mpd_conn{}) ->
+    parse_none(command(C, "tagtypes all")).
 
 %%-------------------------------------------------------------------
 %% @doc
