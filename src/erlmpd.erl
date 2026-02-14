@@ -1107,7 +1107,7 @@ count(C=#mpd_conn{}, Tag, X) ->
 %% for all songs matching the given filter and groups by the given
 %% tag.
 %%
-%% Example: erlmpd:count_group(Conn, artist, {base, ""}).
+%% Example: `erlmpd:count_group(Conn, artist, {base, ""}).'
 %% returns a list like this:
 %% [
 %% 	[{'Artist',&lt;&lt;"Ace Of Base"&gt;&gt;},{songs,13},{playtime,2944}],
