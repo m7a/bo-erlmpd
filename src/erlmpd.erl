@@ -1152,6 +1152,23 @@ find(C, Filter) ->
 %% @doc
 %% Finds songs in the db that match the given filter optionally
 %% providing sort and window options.
+%%
+%% Example returned list format:
+%%
+%% ```
+%% [ ... [{file,<<"album/zucchero_zu_co/01_13_the_flight.flac">>},
+%%       {'Last-Modified',<<"2024-03-03T20:57:24Z">>},
+%%       {'Added',<<"2024-08-23T20:33:10Z">>},
+%%       {'Format',<<"44100:16:2">>},
+%%       {'Album',<<"Zu & Co.">>},
+%%       {'Artist',<<"Zucchero">>},
+%%       {'Date',<<"2004">>},
+%%       {'Title',<<"The Flight">>},
+%%       {'Track',13},
+%%       {'Time',289},
+%%       {duration,<<"288.613">>}],
+%% ... ]
+%% '''
 %% @end
 %%-------------------------------------------------------------------
 -spec find_ex(C::mpd_conn(), Filter::filter(),
@@ -1562,6 +1579,13 @@ notcommands(C=#mpd_conn{}) ->
 %%-------------------------------------------------------------------
 %% @doc
 %% Shows a list of available song metadata.
+%%
+%% Example:
+%% ```
+%% {ok, Conn} = erlmpd:connect("127.0.0.1", 6600),
+%% T1 = erlmpd:tagtypes(Conn),
+%% io:fwrite("T1=<~p>~n", [T1]),
+%% '''
 %% @end
 %%-------------------------------------------------------------------
 -spec tagtypes(C::mpd_conn()) -> [binary()] | {error, any_error()}.
