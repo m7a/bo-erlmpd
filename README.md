@@ -11,7 +11,7 @@ x-masysma-website: https://masysma.net/32/erlmpd.xhtml
 x-masysma-repository: https://www.github.com/m7a/bo-erlmpd
 x-masysma-copyright: |
   Copyright (c) 2009 Caolan McMahon (caolan@caolanmcmahon.com)
-  Copyright (c) 2024, 2025 Ma_Sys.ma (info@masysma.net)
+  Copyright (c) 2024, 2025, 2026 Ma_Sys.ma (info@masysma.net)
 ---
 Foreword
 ========
@@ -306,10 +306,10 @@ MPD Protocol         ERLMPD API                          Support  Comment
 `ping`               `ping/1`                            Yes
 `binarylimit`                                            No
 `tagtypes`           `tagtypes/1`                        Yes
-`tagtypes disable`                                       No       Probably easy to add
-`tagtypes enable`                                        No       Probably easy to add
-`tagtypes clear`                                         No       Probably easy to add
-`tagtypes all`                                           No       Probably easy to add
+`tagtypes disable`   `tagtypes_disable/2`                Yes
+`tagtypes enable`    `tagtypes_enable/2`                 Yes
+`tagtypes clear`     `tagtypes_clear/1`                  Yes
+`tagtypes all`       `tagtypes_all/1`                    Yes
 `partition`          `partition/2`                       Yes
 `listpartitions`     `listpartitions/1`                  Yes
 `newpartition`       `newpartition/2`                    Yes

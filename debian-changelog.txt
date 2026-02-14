@@ -1,3 +1,9 @@
+mdvl-erlmpd (1.0.7) stable; urgency=medium
+
+  * Update package - build with new commands.
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Sat, 14 Feb 2026 19:41:09 +0100
+
 mdvl-erlmpd (1.0.6) stable; urgency=medium
 
   * Trigger rebuild
