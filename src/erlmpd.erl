@@ -154,7 +154,7 @@
 %%                        <td>Tests for lexicographical lower than</td></tr>
 %% </tbody></table>
 
--type window_option()       :: {window, Start::integer(), End::integer()}.
+-type window_option()       :: {window, {Start::integer(), End::integer()}}.
 %% Certain MPD commands accept sort and window options to enforce a given
 %% output ordering for the results or that only a subset of the results is
 %% returned. When a command accepts this type as input, the empty list []
@@ -1928,7 +1928,7 @@ ex_and(Expr)                 -> ["(", lists:join(" AND ", Expr), ")"].
 sort_window_options_to_string(Options) ->
     LS = case proplists:get_value(window, Options) of
          undefined    -> "";
-         {Start, End} -> io_lib:format(" window \"~w:~w\"", Start, End)
+         {Start, End} -> io_lib:format(" window \"~w:~w\"", [Start, End])
          end,
     case proplists:get_value(sort, Options) of
          undefined -> LS;
