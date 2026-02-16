@@ -1,3 +1,9 @@
+mdvl-erlmpd (1.0.8) stable; urgency=medium
+
+  * Update package - fix window option
+
+ -- Ma_Sys.ma Linux-Fan <info@masysma.net>  Mon, 16 Feb 2026 19:42:03 +0100
+
 mdvl-erlmpd (1.0.7) stable; urgency=medium
 
   * Update package - build with new commands.
