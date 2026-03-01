@@ -40,7 +40,8 @@
 
 %% Stickers
 -export([sticker_delete/3, sticker_delete/4, sticker_list/3, sticker_get/4,
-         sticker_find/4, sticker_find/7, sticker_set/5]).
+         sticker_find/4, sticker_find/7, sticker_set/5, sticker_inc/5,
+         sticker_dec/5]).
 
 %% Connection settings
 -export([close/1, kill/1, password/2, ping/1]).
@@ -1430,6 +1431,39 @@ sticker_delete(C=#mpd_conn{}, Type, Uri, Name) ->
 				Value::string()) -> ok | {error, any_error()}.
 sticker_set(C=#mpd_conn{}, Type, Uri, Name, Value) ->
     parse_none(command(C, "sticker set", [Type, Uri, Name, Value])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Increment sticker value by given value, creating it with the
+%% given value if absent.
+%% @end
+%%-------------------------------------------------------------------
+-spec sticker_inc(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
+				Value::integer()) -> ok | {error, any_error()}.
+sticker_inc(C=#mpd_conn{}, Type, Uri, Name, Value) ->
+    parse_none(command(C, "sticker inc",
+                       [Type, Uri, Name, integer_to_list(Value)])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Decrement sticker value by given value if it already exists.
+%% If it does not exist yet, create a sticker with the given value.
+%%
+%% Note that this means the function is not really “inverse” of
+%% sticker_inc in any way: sticker_dec after sticker_inc does not
+%% delete stickers if their value reaches 0. sticker_inc and
+%% sticker_dec behave equally in event that a sticker does not
+%% exist yet, both causing a new sticker with the given value to be
+%% created. In many cases, a more consistent behaviour may be
+%% obtained by calling sticker_inc with a negative value in favor of
+%% using sticker_dec.
+%% @end
+%%-------------------------------------------------------------------
+-spec sticker_dec(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
+				Value::integer()) -> ok | {error, any_error()}.
+sticker_dec(C=#mpd_conn{}, Type, Uri, Name, Value) ->
+    parse_none(command(C, "sticker dec",
+                       [Type, Uri, Name, integer_to_list(Value)])).
 
 
 %%===================================================================
