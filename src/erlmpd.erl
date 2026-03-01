@@ -13,7 +13,8 @@
          noidle/1, idle_send/2, idle_receive/1, status/1, stats/1]).
 
 %% Playback options
--export([consume/2, crossfade/2, random/2, repeat/2, setvol/2, single/2]).
+-export([consume/2, crossfade/2, random/2, repeat/2, setvol/2, single/2,
+	volume/2]).
 
 %% Controlling playback
 -export([next/1, pause/2, play/1, play/2, playid/1, playid/2, previous/1,
@@ -39,7 +40,8 @@
 
 %% Stickers
 -export([sticker_delete/3, sticker_delete/4, sticker_list/3, sticker_get/4,
-         sticker_find/4, sticker_find/7, sticker_set/5]).
+         sticker_find/4, sticker_find/7, sticker_set/5, sticker_inc/5,
+         sticker_dec/5]).
 
 %% Connection settings
 -export([close/1, kill/1, password/2, ping/1]).
@@ -548,6 +550,16 @@ single(C=#mpd_conn{}, State)  ->
         false -> {error, mpd_version}
     end.
 
+%%-------------------------------------------------------------------
+%% @doc
+%% Changes volume by relative amount (positive or negeative).
+%% The change is given in percent to be added to the current volume
+%% setting.
+%% @end
+%%-------------------------------------------------------------------
+-spec volume(C::mpd_conn(), Change::integer()) -> ok | {error, any_error()}.
+volume(C=#mpd_conn{}, Change) ->
+    parse_none(command(C, "volume", [integer_to_list(Change)])).
 
 %%===================================================================
 %% Controlling playback
@@ -1335,8 +1347,10 @@ update(C=#mpd_conn{}, Uri) ->
 %% Delete all stickers associated to the given type and URI.
 %% @end
 %%-------------------------------------------------------------------
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string()) ->
+						ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri) ->
-    command(C, "sticker delete", [Type, Uri]).
+    parse_none(command(C, "sticker delete", [Type, Uri])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1403,8 +1417,10 @@ sticker_find(C=#mpd_conn{}, Type, Uri, Name, Op, CompareValue, Options) ->
 %% Delete specific sticker by Type, URI and Name.
 %% @end
 %%-------------------------------------------------------------------
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string(),
+				Name::string()) -> ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri, Name) ->
-    command(C, "sticker delete", [Type, Uri, Name]).
+    parse_none(command(C, "sticker delete", [Type, Uri, Name])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1415,6 +1431,39 @@ sticker_delete(C=#mpd_conn{}, Type, Uri, Name) ->
 				Value::string()) -> ok | {error, any_error()}.
 sticker_set(C=#mpd_conn{}, Type, Uri, Name, Value) ->
     parse_none(command(C, "sticker set", [Type, Uri, Name, Value])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Increment sticker value by given value, creating it with the
+%% given value if absent.
+%% @end
+%%-------------------------------------------------------------------
+-spec sticker_inc(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
+				Value::integer()) -> ok | {error, any_error()}.
+sticker_inc(C=#mpd_conn{}, Type, Uri, Name, Value) ->
+    parse_none(command(C, "sticker inc",
+                       [Type, Uri, Name, integer_to_list(Value)])).
+
+%%-------------------------------------------------------------------
+%% @doc
+%% Decrement sticker value by given value if it already exists.
+%% If it does not exist yet, create a sticker with the given value.
+%%
+%% Note that this means the function is not really “inverse” of
+%% sticker_inc in any way: sticker_dec after sticker_inc does not
+%% delete stickers if their value reaches 0. sticker_inc and
+%% sticker_dec behave equally in event that a sticker does not
+%% exist yet, both causing a new sticker with the given value to be
+%% created. In many cases, a more consistent behaviour may be
+%% obtained by calling sticker_inc with a negative value in favor of
+%% using sticker_dec.
+%% @end
+%%-------------------------------------------------------------------
+-spec sticker_dec(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
+				Value::integer()) -> ok | {error, any_error()}.
+sticker_dec(C=#mpd_conn{}, Type, Uri, Name, Value) ->
+    parse_none(command(C, "sticker dec",
+                       [Type, Uri, Name, integer_to_list(Value)])).
 
 
 %%===================================================================
