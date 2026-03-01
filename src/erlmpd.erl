@@ -1335,8 +1335,10 @@ update(C=#mpd_conn{}, Uri) ->
 %% Delete all stickers associated to the given type and URI.
 %% @end
 %%-------------------------------------------------------------------
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string()) ->
+						ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri) ->
-    command(C, "sticker delete", [Type, Uri]).
+    parse_none(command(C, "sticker delete", [Type, Uri])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1403,8 +1405,10 @@ sticker_find(C=#mpd_conn{}, Type, Uri, Name, Op, CompareValue, Options) ->
 %% Delete specific sticker by Type, URI and Name.
 %% @end
 %%-------------------------------------------------------------------
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string(),
+				Name::string()) -> ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri, Name) ->
-    command(C, "sticker delete", [Type, Uri, Name]).
+    parse_none(command(C, "sticker delete", [Type, Uri, Name])).
 
 %%-------------------------------------------------------------------
 %% @doc
