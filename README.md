@@ -195,7 +195,8 @@ repository.
 API Support Status
 ==================
 
-Table updated 2024-09-08. Some development notes about the API support status:
+Table updated wrt. MPD API 2024-09-08.
+Some development notes about the API support status:
 
  * Unsupported commands may be available through the `command` APIs, but it may
    be better to just add the missing function in erlmpd and send a patch!
@@ -224,7 +225,7 @@ MPD Protocol         ERLMPD API                          Support  Comment
 `single`             `single/2`                          Yes
 `replay_gain_mode`                                       No       Probably easy to add
 `replay_gain_status`                                     No       Probably easy to add
-`volume`                                                 No       Probably easy to add
+`volume`             `volume/2`                          Yes
 `next`               `next/1`                            Yes
 `pause`              `pause/2`                           Yes
 `play`               `play/1`, `play/2`                  Yes
@@ -294,6 +295,8 @@ MPD Protocol         ERLMPD API                          Support  Comment
 `listneighbors`                                          No
 `sticker get`        `sticker_get/4`                     Yes
 `sticker set`        `sticker_set/5`                     Yes
+`sticker inc`        `sticker_inc/5`                     Yes
+`sticker dec`        `sticker_dec/5`                     Yes
 `sticker delete`     `sticker_delete/3`,                 Yes
                      `sticker_delete/4`                   
 `sticker list`       `sticker_list/3`                    Yes

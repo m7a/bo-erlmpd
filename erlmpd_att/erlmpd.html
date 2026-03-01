@@ -356,6 +356,8 @@ with the file contents.</td></tr>
   Displays statistics.</td></tr>
 <tr><td valign="top"><a href="#status-1">status/1</a></td><td>
   Reports the current status of the player and the volume level.</td></tr>
+<tr><td valign="top"><a href="#sticker_dec-5">sticker_dec/5</a></td><td>  
+Decrement sticker value by given value if it already exists.</td></tr>
 <tr><td valign="top"><a href="#sticker_delete-3">sticker_delete/3</a></td><td>
   Delete all stickers associated to the given type and URI.</td></tr>
 <tr><td valign="top"><a href="#sticker_delete-4">sticker_delete/4</a></td><td>
@@ -369,6 +371,9 @@ specified URI prefix (can be empty to retrieve all stickers).</td></tr>
   ordering and pagination capabilities.</td></tr>
 <tr><td valign="top"><a href="#sticker_get-4">sticker_get/4</a></td><td>
   Get value of specific sticker by Type, URI and Name.</td></tr>
+<tr><td valign="top"><a href="#sticker_inc-5">sticker_inc/5</a></td><td>
+  Increment sticker value by given value, creating it with the
+  given value if absent.</td></tr>
 <tr><td valign="top"><a href="#sticker_list-3">sticker_list/3</a></td><td>
   Retrieve all stickers associated to the given type and URI.</td></tr>
 <tr><td valign="top"><a href="#sticker_set-5">sticker_set/5</a></td><td>
@@ -400,6 +405,8 @@ queries.</td></tr>
   Gets a list of available URL handlers.</td></tr>
 <tr><td valign="top"><a href="#version-1">version/1</a></td><td>
   Returns a string representing the MPD version number for Connection.</td></tr>
+<tr><td valign="top"><a href="#volume-2">volume/2</a></td><td>
+  Changes volume by relative amount (positive or negeative).</td></tr>
 </table>
 
 <h2><a name="functions">Function Details</a></h2>
@@ -1255,16 +1262,33 @@ file if this was provied by MPD.</p>
     <li>error: binary: if there is an error, returns message here</li>
   </ul></p>
 
+<h3 class="function"><a name="sticker_dec-5">sticker_dec/5</a></h3>
+<div class="spec">
+<p><code>sticker_dec(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p> </p>
+</div><p><p>  
+Decrement sticker value by given value if it already exists.  
+If it does not exist yet, create a sticker with the given value.</p>
+ 
+  Note that this means the function is not really “inverse” of
+  sticker_inc in any way: sticker_dec after sticker_inc does not
+  delete stickers if their value reaches 0. sticker_inc and
+  sticker_dec behave equally in event that a sticker does not
+  exist yet, both causing a new sticker with the given value to be
+  created. In many cases, a more consistent behaviour may be
+  obtained by calling sticker_inc with a negative value in favor of
+  using sticker_dec.</p>
+
 <h3 class="function"><a name="sticker_delete-3">sticker_delete/3</a></h3>
 <div class="spec">
-<p><code>sticker_delete(C, Type, Uri) -&gt; any()</code></p>
+<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Delete all stickers associated to the given type and URI.</p>
 
 <h3 class="function"><a name="sticker_delete-4">sticker_delete/4</a></h3>
 <div class="spec">
-<p><code>sticker_delete(C, Type, Uri, Name) -&gt; any()</code></p>
+<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Delete specific sticker by Type, URI and Name.</p>
@@ -1296,6 +1320,14 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
 <p> </p>
 </div><p>
   Get value of specific sticker by Type, URI and Name.</p>
+
+<h3 class="function"><a name="sticker_inc-5">sticker_inc/5</a></h3>
+<div class="spec">
+<p><code>sticker_inc(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p> </p>
+</div><p>
+  Increment sticker value by given value, creating it with the
+  given value if absent.</p>
 
 <h3 class="function"><a name="sticker_list-3">sticker_list/3</a></h3>
 <div class="spec">
@@ -1434,6 +1466,15 @@ queries.</p>
 <p> </p>
 </div><p>
   Returns a string representing the MPD version number for Connection</p>
+
+<h3 class="function"><a name="volume-2">volume/2</a></h3>
+<div class="spec">
+<p><code>volume(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Change::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p> </p>
+</div><p>
+  Changes volume by relative amount (positive or negeative).
+  The change is given in percent to be added to the current volume
+  setting.</p>
 <hr>
 
 <div class="navbar"><a name="#navbar_bottom"></a><table width="100%" border="0" cellspacing="0" cellpadding="2" summary="navigation bar"><tr><td><a href="overview-summary.html" target="overviewFrame">Overview</a></td><td><a href="http://www.erlang.org/"><img src="erlang.png" align="right" border="0" alt="erlang logo"></a></td></tr></table></div>
