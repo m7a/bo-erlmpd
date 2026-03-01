@@ -13,7 +13,8 @@
          noidle/1, idle_send/2, idle_receive/1, status/1, stats/1]).
 
 %% Playback options
--export([consume/2, crossfade/2, random/2, repeat/2, setvol/2, single/2]).
+-export([consume/2, crossfade/2, random/2, repeat/2, setvol/2, single/2,
+	volume/2]).
 
 %% Controlling playback
 -export([next/1, pause/2, play/1, play/2, playid/1, playid/2, previous/1,
@@ -548,6 +549,16 @@ single(C=#mpd_conn{}, State)  ->
         false -> {error, mpd_version}
     end.
 
+%%-------------------------------------------------------------------
+%% @doc
+%% Changes volume by relative amount (positive or negeative).
+%% The change is given in percent to be added to the current volume
+%% setting.
+%% @end
+%%-------------------------------------------------------------------
+-spec volume(C::mpd_conn(), Change::integer()) -> ok | {error, any_error()}.
+volume(C=#mpd_conn{}, Change) ->
+    parse_none(command(C, "volume", [integer_to_list(Change)])).
 
 %%===================================================================
 %% Controlling playback
