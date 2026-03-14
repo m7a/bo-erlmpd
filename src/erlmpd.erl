@@ -174,6 +174,14 @@
 
 -type sticker_sort_option() :: {sort, uri | value | value_int}.
 
+-type string_or_filter()    :: string() | filter().
+%% The meaning of the `Uri' parameter for stickers depends on the given `Type'.
+%% If `Type' is a `"song"' then `Uri' is of type string and specifies the file
+%% name (as a relative path starting at the top of the MPD structure) assigned
+%% to the sticker. If `Type' is `"filter"', `Uri' identifies a filter expression
+%% which erlmpd expects to receive as a filter specification of type `filter()'
+%% which erlmpd serializes before passing it to MPD.
+
 %%===================================================================
 %% Exported functions not part of the MPD API
 %%===================================================================
@@ -1347,31 +1355,33 @@ update(C=#mpd_conn{}, Uri) ->
 %% Delete all stickers associated to the given type and URI.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string()) ->
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string_or_filter()) ->
 						ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri) ->
-    parse_none(command(C, "sticker delete", [Type, Uri])).
+    parse_none(command(C, "sticker delete", [Type, sticker_uri(Type, Uri)])).
 
 %%-------------------------------------------------------------------
 %% @doc
 %% Retrieve all stickers associated to the given type and URI.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_list(C::mpd_conn(), Type::string(), Uri::string()) ->
+-spec sticker_list(C::mpd_conn(), Type::string(), Uri::string_or_filter()) ->
 				[{atom(), string()}] | {error, any_error()}.
 sticker_list(C=#mpd_conn{}, Type, Uri) ->
-    parse_stickers_line(command(C, "sticker list", [Type, Uri])).
+    parse_stickers_line(command(C, "sticker list",
+                                [Type, sticker_uri(Type, Uri)])).
 
 %%-------------------------------------------------------------------
 %% @doc
 %% Get value of specific sticker by Type, URI and Name.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_get(C::mpd_conn(), Type::string(), Uri::string(),
+-spec sticker_get(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
 			Name::string()) -> string() | {error, any_error()}.
 sticker_get(C=#mpd_conn{}, Type, Uri, Name) ->
     pass_errors(
-        parse_stickers_line(command(C, "sticker get", [Type, Uri, Name])),
+        parse_stickers_line(command(C, "sticker get",
+                                    [Type, sticker_uri(Type, Uri), Name])),
         fun([{_Key, Val}]) -> Val end
     ).
 
@@ -1385,10 +1395,11 @@ sticker_get(C=#mpd_conn{}, Type, Uri, Name) ->
 %% associated key-value pairs as parsed from the stickers. 
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_find(C::mpd_conn(), Type::string(), Uri::string(),
+-spec sticker_find(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
 	Name::string()) -> [[{atom(), string()}]] | {error, any_error()}.
 sticker_find(C=#mpd_conn{}, Type, Uri, Name) ->
-    parse_stickers(command(C, "sticker find", [Type, Uri, Name])).
+    parse_stickers(command(C, "sticker find",
+                           [Type, sticker_uri(Type, Uri), Name])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1397,7 +1408,7 @@ sticker_find(C=#mpd_conn{}, Type, Uri, Name) ->
 %% ordering and pagination capabilities.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_find(C::mpd_conn(), Type::string(), Uri::string(),
+-spec sticker_find(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
 		Name::string(), Op::sticker_op(), CompareValue::string(),
 		Options::[window_option() | sticker_sort_option()]) ->
 		[[{atom(), string()}]] | {error, any_error()}.
@@ -1408,29 +1419,32 @@ sticker_find(C=#mpd_conn{}, Type, Uri, Name, Op, CompareValue, Options) ->
         str_lt -> "<";
         _Other -> atom_to_list(Op) % eq, lt, gt, contains, starts_with
     end,
-    parse_stickers(command(C, "sticker find", [Type, Uri, Name], ?TIMEOUT,
+    parse_stickers(command(C, "sticker find",
+        [Type, sticker_uri(Type, Uri), Name], ?TIMEOUT,
         [" ", OpString, " ", escape_arg(CompareValue),
-         sort_window_options_to_string(Options)])).
+        sort_window_options_to_string(Options)])).
 
 %%-------------------------------------------------------------------
 %% @doc
 %% Delete specific sticker by Type, URI and Name.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string(),
+-spec sticker_delete(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
 				Name::string()) -> ok | {error, any_error()}.
 sticker_delete(C=#mpd_conn{}, Type, Uri, Name) ->
-    parse_none(command(C, "sticker delete", [Type, Uri, Name])).
+    parse_none(command(C, "sticker delete",
+                       [Type, sticker_uri(Type, Uri), Name])).
 
 %%-------------------------------------------------------------------
 %% @doc
 %% Assign sticker value by Type, URI and Name.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_set(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
-				Value::string()) -> ok | {error, any_error()}.
+-spec sticker_set(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
+		Name::string(), Value::string()) -> ok | {error, any_error()}.
 sticker_set(C=#mpd_conn{}, Type, Uri, Name, Value) ->
-    parse_none(command(C, "sticker set", [Type, Uri, Name, Value])).
+    parse_none(command(C, "sticker set",
+                       [Type, sticker_uri(Type, Uri), Name, Value])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1438,11 +1452,11 @@ sticker_set(C=#mpd_conn{}, Type, Uri, Name, Value) ->
 %% given value if absent.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_inc(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
-				Value::integer()) -> ok | {error, any_error()}.
+-spec sticker_inc(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
+		Name::string(), Value::integer()) -> ok | {error, any_error()}.
 sticker_inc(C=#mpd_conn{}, Type, Uri, Name, Value) ->
-    parse_none(command(C, "sticker inc",
-                       [Type, Uri, Name, integer_to_list(Value)])).
+    parse_none(command(C, "sticker inc", [Type, sticker_uri(Type, Uri),
+                                          Name, integer_to_list(Value)])).
 
 %%-------------------------------------------------------------------
 %% @doc
@@ -1459,11 +1473,11 @@ sticker_inc(C=#mpd_conn{}, Type, Uri, Name, Value) ->
 %% using sticker_dec.
 %% @end
 %%-------------------------------------------------------------------
--spec sticker_dec(C::mpd_conn(), Type::string(), Uri::string(), Name::string(),
-				Value::integer()) -> ok | {error, any_error()}.
+-spec sticker_dec(C::mpd_conn(), Type::string(), Uri::string_or_filter(),
+		Name::string(), Value::integer()) -> ok | {error, any_error()}.
 sticker_dec(C=#mpd_conn{}, Type, Uri, Name, Value) ->
-    parse_none(command(C, "sticker dec",
-                       [Type, Uri, Name, integer_to_list(Value)])).
+    parse_none(command(C, "sticker dec", [Type, sticker_uri(Type, Uri),
+                                          Name, integer_to_list(Value)])).
 
 
 %%===================================================================
@@ -1984,3 +1998,6 @@ sort_window_options_to_string(Options) ->
          Type      -> io_lib:format(" sort \"~s\"~s",
                                     [escape_quotes(atom_to_list(Type)), LS])
     end.
+
+sticker_uri("filter",   Uri) -> ex_parse(Uri);
+sticker_uri(_OtherType, Uri) -> Uri.
