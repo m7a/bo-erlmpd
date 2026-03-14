@@ -126,6 +126,15 @@ using an operator in a given sticker_find/7.</p>
 <p><code>sticker_sort_option() = {sort, uri | value | value_int}</code></p>
 
 
+<h3 class="typedecl"><a name="type-string_or_filter">string_or_filter()</a></h3>
+<p><code>string_or_filter() = string() | <a href="#type-filter" docgen-rel="seetype" docgen-href="#filter/0">filter()</a></code></p>
+<p>  The meaning of the <code>Uri</code> parameter for stickers depends on the given <code>Type</code>.
+  If <code>Type</code> is a <code>"song"</code> then <code>Uri</code> is of type string and specifies the file
+  name (as a relative path starting at the top of the MPD structure) assigned
+  to the sticker. If <code>Type</code> is <code>"filter"</code>, <code>Uri</code> identifies a filter expression
+  which erlmpd expects to receive as a filter specification of type <code>filter()</code>
+  which erlmpd serializes before passing it to MPD.</p>
+
 <h3 class="typedecl"><a name="type-tag">tag()</a></h3>
 <p><code>tag() = artist | albumartist | album | title | track | genre | disc | date</code></p>
 
@@ -1264,7 +1273,7 @@ file if this was provied by MPD.</p>
 
 <h3 class="function"><a name="sticker_dec-5">sticker_dec/5</a></h3>
 <div class="spec">
-<p><code>sticker_dec(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_dec(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p><p>  
 Decrement sticker value by given value if it already exists.  
@@ -1281,21 +1290,21 @@ If it does not exist yet, create a sticker with the given value.</p>
 
 <h3 class="function"><a name="sticker_delete-3">sticker_delete/3</a></h3>
 <div class="spec">
-<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Delete all stickers associated to the given type and URI.</p>
 
 <h3 class="function"><a name="sticker_delete-4">sticker_delete/4</a></h3>
 <div class="spec">
-<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_delete(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Delete specific sticker by Type, URI and Name.</p>
 
 <h3 class="function"><a name="sticker_find-4">sticker_find/4</a></h3>
 <div class="spec">
-<p><code>sticker_find(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_find(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string()) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p><p>  
 Search for stickers of the specified type and name below the  
@@ -1307,7 +1316,7 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
 
 <h3 class="function"><a name="sticker_find-7">sticker_find/7</a></h3>
 <div class="spec">
-<p><code>sticker_find(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Op::<a href="#type-sticker_op" docgen-rel="seetype" docgen-href="#sticker_op/0">sticker_op()</a>, CompareValue::string(), Options::[<a href="#type-window_option" docgen-rel="seetype" docgen-href="#window_option/0">window_option()</a> | <a href="#type-sticker_sort_option" docgen-rel="seetype" docgen-href="#sticker_sort_option/0">sticker_sort_option()</a>]) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_find(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string(), Op::<a href="#type-sticker_op" docgen-rel="seetype" docgen-href="#sticker_op/0">sticker_op()</a>, CompareValue::string(), Options::[<a href="#type-window_option" docgen-rel="seetype" docgen-href="#window_option/0">window_option()</a> | <a href="#type-sticker_sort_option" docgen-rel="seetype" docgen-href="#sticker_sort_option/0">sticker_sort_option()</a>]) -&gt; [[{atom(), string()}]] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Like sticker_find/4 but additionally allows specifying exactly one
@@ -1316,14 +1325,14 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
 
 <h3 class="function"><a name="sticker_get-4">sticker_get/4</a></h3>
 <div class="spec">
-<p><code>sticker_get(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string()) -&gt; string() | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_get(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string()) -&gt; string() | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Get value of specific sticker by Type, URI and Name.</p>
 
 <h3 class="function"><a name="sticker_inc-5">sticker_inc/5</a></h3>
 <div class="spec">
-<p><code>sticker_inc(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_inc(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string(), Value::integer()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Increment sticker value by given value, creating it with the
@@ -1331,14 +1340,14 @@ specified URI prefix (can be empty to retrieve all stickers).</p>
 
 <h3 class="function"><a name="sticker_list-3">sticker_list/3</a></h3>
 <div class="spec">
-<p><code>sticker_list(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string()) -&gt; [{atom(), string()}] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_list(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>) -&gt; [{atom(), string()}] | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Retrieve all stickers associated to the given type and URI.</p>
 
 <h3 class="function"><a name="sticker_set-5">sticker_set/5</a></h3>
 <div class="spec">
-<p><code>sticker_set(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::string(), Name::string(), Value::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
+<p><code>sticker_set(C::<a href="#type-mpd_conn" docgen-rel="seetype" docgen-href="#mpd_conn/0">mpd_conn()</a>, Type::string(), Uri::<a href="#type-string_or_filter" docgen-rel="seetype" docgen-href="#string_or_filter/0">string_or_filter()</a>, Name::string(), Value::string()) -&gt; ok | {error, <a href="#type-any_error" docgen-rel="seetype" docgen-href="#any_error/0">any_error()</a>}</code><br></p>
 <p> </p>
 </div><p>
   Assign sticker value by Type, URI and Name.</p>
