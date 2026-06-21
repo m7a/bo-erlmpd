@@ -1815,9 +1815,9 @@ parse_songs(List) ->
     end).
 
 parse_stickers(List) ->
-    GRP = parse_group([file], List),
+    GRP = parse_group([file, filter], List),
     pass_errors(GRP, fun(GRPi) ->
-        [[{file, proplists:get_value(file, L)}|
+        [[{file, proplists:get_value(file, L, proplists:get_value(filter, L))}|
          parse_stickers_value(proplists:get_value(sticker, L))] || L <- GRPi]
     end).
 
