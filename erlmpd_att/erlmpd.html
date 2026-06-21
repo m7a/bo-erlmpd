@@ -21,7 +21,7 @@
 
 
 <h3 class="typedecl"><a name="type-filter">filter()</a></h3>
-<p><code>filter() = {tagop, <a href="#type-tag" docgen-rel="seetype" docgen-href="#tag/0">tag()</a>, <a href="#type-filter_op" docgen-rel="seetype" docgen-href="#filter_op/0">filter_op()</a>, iolist()} | {fileeq, iolist()} | {base, iolist()} | {modified_since, iolist()} | {added_since, iolist()} | {audio_format_eq, iolist()} | {audio_format_match, iolist()} | {prio_ge, integer()} | {lnot, <a href="#type-filter" docgen-rel="seetype" docgen-href="#filter/0">filter()</a>} | {land, [<a href="#type-filter" docgen-rel="seetype" docgen-href="#filter/0">filter()</a>]}</code></p>
+<p><code>filter() = {tagop, <a href="#type-tag" docgen-rel="seetype" docgen-href="#tag/0">tag()</a>, <a href="#type-filter_op" docgen-rel="seetype" docgen-href="#filter_op/0">filter_op()</a>, iolist()} | {fileeq, iolist()} | {base, iolist()} | {modified_since, iolist()} | {added_since, iolist()} | {audio_format_eq, iolist()} | {audio_format_match, iolist()} | {prio_ge, integer()} | {lnot, <a href="#type-filter" docgen-rel="seetype" docgen-href="#filter/0">filter()</a>} | {land, [<a href="#type-filter" docgen-rel="seetype" docgen-href="#filter/0">filter()</a>]} | {raw, iolist()}</code></p>
 <p><p>  A filter specification is a (potentially nested) construction of tuples  
 consisting of several operators.</p>
  
@@ -53,6 +53,10 @@ consisting of several operators.</p>
                 Logical negation of given filter</td></tr>
   <tr><td>land</td><td>(EXPRESSION1 AND EXPRESSION 2...)</td><td>
                 Logical and of two or more filters</td></tr>
+  <tr><td>raw</td><td>(any)</td><td>
+                Bypass parsing and insert custom filter syntax. Intended
+                primarily for use with sticker_find to list all stickers and
+                to allow querying the results returned by it.</td></tr>
   </tbody></table></p>
 
 <h3 class="typedecl"><a name="type-filter_op">filter_op()</a></h3>
