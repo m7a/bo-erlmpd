@@ -96,7 +96,8 @@
                   {fileeq, iolist()} | {base, iolist()} |
                   {modified_since, iolist()} | {added_since, iolist()} |
                   {audio_format_eq, iolist()} | {audio_format_match, iolist()} |
-                  {prio_ge, integer()} | {lnot, filter()} | {land, [filter()]}.
+                  {prio_ge, integer()} | {lnot, filter()} | {land, [filter()]} |
+                  {raw, iolist()}.
 %% A filter specification is a (potentially nested) construction of tuples
 %% consisting of several operators.
 %%
@@ -128,6 +129,10 @@
 %%               Logical negation of given filter</td></tr>
 %% <tr><td>land</td><td>(EXPRESSION1 AND EXPRESSION 2...)</td><td>
 %%               Logical and of two or more filters</td></tr>
+%% <tr><td>raw</td><td>(any)</td><td>
+%%               Bypass parsing and insert custom filter syntax. Intended
+%%               primarily for use with sticker_find to list all stickers and
+%%               to allow querying the results returned by it.</td></tr>
 %% </tbody></table>
 
 -type sticker_op()    :: generic_op() | lt | gt | str_eq | str_gt | str_lt.
@@ -1952,6 +1957,7 @@ command_binary(C=#mpd_conn{}, Command, Args, Offset0, Results0, Bin0) ->
 ex_parse(Expr) ->
     lists:flatten(ex_parse_inner(Expr)).
 
+ex_parse_inner({raw, Value})                -> ex_raw(Value);
 ex_parse_inner({tagop, Tag, Op, Value})     -> ex_tagop(Tag, Op, Value);
 ex_parse_inner({fileeq, Value})             -> ex_fileeq(Value);
 ex_parse_inner({base, Value})               -> ex_base(Value);
@@ -1978,6 +1984,7 @@ ex_quote(Value) ->
     io_lib:format("\"~s\"", [string:replace(escape_quotes(Value),
                                             "'", "\\'", all)]).
 
+ex_raw(Value)                -> [Value].
 ex_fileeq(Value)             -> ["(file == ",        ex_quote(Value), ")"].
 ex_base(Value)               -> ["(base ",           ex_quote(Value), ")"].
 ex_modified_since(Value)     -> ["(modified-since ", ex_quote(Value), ")"].
